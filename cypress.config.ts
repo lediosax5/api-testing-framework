@@ -22,7 +22,7 @@ export default defineConfig({
   video: false,
 
   e2e: {
-    specPattern: 'cypress/e2e/api/**/*.cy.ts',
+    specPattern: 'cypress/e2e/apis/**/*.cy.ts',
     supportFile: 'cypress/support/e2e.ts',
 
     setupNodeEvents(on, config) {
