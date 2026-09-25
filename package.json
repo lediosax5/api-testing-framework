@@ -1,15 +1,16 @@
 {
   "name": "api-testing-framework",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Professional API test automation framework built with Cypress and TypeScript",
   "scripts": {
-    "cy:open": "cypress open",
-    "cy:run": "cypress run --browser chrome",
+    "cy:open": "cypress open --e2e",
+    "cy:run": "cypress run --e2e --browser chrome",
+    "typecheck": "tsc --noEmit -p cypress/tsconfig.json",
     "test": "npm run cy:run"
   },
   "keywords": [],
   "author": "Guido Piaggio",
+  "private": true,
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {

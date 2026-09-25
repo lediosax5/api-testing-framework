@@ -5,6 +5,7 @@ node_modules/
 .env
 .env.*
 !.env.example
+cypress.env.json
 
 # Cypress generated assets
 cypress/videos/
