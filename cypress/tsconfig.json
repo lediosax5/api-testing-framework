@@ -5,10 +5,18 @@
       "ES2022",
       "DOM"
     ],
+    "module": "commonjs",
+    "strict": true,
+    "noEmit": true,
     "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "types": [
       "cypress",
-      "node"
+      "node",
+      "cypress-plugin-api",
+      "cypress-plugin-steps",
+      "cypress-terminal-report"
     ]
   },
   "include": [

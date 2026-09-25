@@ -15,6 +15,10 @@
   "devDependencies": {
     "@types/node": "^26.6.2",
     "cypress": "^16.1.0",
+    "cypress-mochawesome-reporter": "^5.0.0",
+    "cypress-plugin-api": "^2.12.3",
+    "cypress-plugin-steps": "^1.2.1",
+    "cypress-terminal-report": "^7.3.3",
     "typescript": "^7.0.2"
   },
   "dependencies": {
