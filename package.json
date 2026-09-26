@@ -5,7 +5,11 @@
   "scripts": {
     "cy:open": "cypress open --e2e",
     "cy:run": "cypress run --e2e --browser chrome",
-    "typecheck": "tsc --noEmit -p cypress/tsconfig.json",
+    "mock:start": "tsx mock-server/src/server.ts",
+    "mock:dev": "tsx watch mock-server/src/server.ts",
+    "typecheck:cypress": "tsc --noEmit -p cypress/tsconfig.json",
+    "typecheck:mock": "tsc --noEmit -p mock-server/tsconfig.json",
+    "typecheck": "npm run typecheck:cypress && npm run typecheck:mock",
     "test": "npm run cy:run"
   },
   "keywords": [],
@@ -14,12 +18,18 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^26.6.2",
     "cypress": "^16.1.0",
     "cypress-mochawesome-reporter": "^5.0.0",
     "cypress-plugin-api": "^2.12.3",
     "cypress-plugin-steps": "^1.2.1",
     "cypress-terminal-report": "^7.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "zod": "^4.6.5"
   }
 }
