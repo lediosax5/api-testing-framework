@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { DuplicateUserEmailError, userService } from '../services/user.service';
 import type { CreateUserInput } from '../types/user.types';
+import type { ListUsersOptions } from '../types/user.types';
 
 export function createUser(_request: Request, response: Response): void {
   const input = response.locals.createUserInput as CreateUserInput;
@@ -21,4 +22,26 @@ export function createUser(_request: Request, response: Response): void {
     }
     throw error;
   }
+}
+
+export function getUsers(_request: Request, response: Response): void {
+  const options = response.locals.listUsersOptions as ListUsersOptions;
+  response.status(200).json(userService.getAll(options));
+}
+
+export function getUserById(request: Request, response: Response): void {
+  const id = response.locals.userId as string;
+  const user = userService.getById(id);
+  if (!user) {
+    response.status(404).json({
+      type: 'not-found',
+      title: 'Resource Not Found',
+      status: 404,
+      code: 'USR-404-01',
+      detail: 'User was not found.',
+      instance: `${request.baseUrl}${request.path}`,
+    });
+    return;
+  }
+  response.status(200).json(user);
 }
