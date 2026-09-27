@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUser, getUserById, getUsers, patchUser, replaceUser } from '../controllers/user.controller';
+import { createUser, deleteUser, getUserById, getUsers, patchUser, replaceUser } from '../controllers/user.controller';
 import { validateCreateUserRequest, validatePatchUserRequest, validateReplaceUserRequest } from '../middleware/create-user-validation.middleware';
 import { validateUserId } from '../middleware/user-id-validation.middleware';
 import { validateUserListQuery } from '../middleware/user-query-validation.middleware';
@@ -11,5 +11,6 @@ userRouter.get('/', validateUserListQuery, getUsers);
 userRouter.get('/:id', validateUserId, getUserById);
 userRouter.put('/:id', validateUserId, validateReplaceUserRequest, replaceUser);
 userRouter.patch('/:id', validateUserId, validatePatchUserRequest, patchUser);
+userRouter.delete('/:id', validateUserId, deleteUser);
 
 export default userRouter;

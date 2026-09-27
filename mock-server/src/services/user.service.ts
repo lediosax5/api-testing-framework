@@ -76,6 +76,10 @@ export class UserService {
     return this.repository.findById(id);
   }
 
+  delete(id: string): boolean {
+    return this.repository.delete(id);
+  }
+
   getAll(options: ListUsersOptions): ListUsersResult {
     let users = this.repository.findAll();
     if (options.status) users = users.filter((user) => user.status === options.status);

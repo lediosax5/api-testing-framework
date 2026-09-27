@@ -112,3 +112,19 @@ export function patchUser(request: Request, response: Response): void {
     throw error;
   }
 }
+
+export function deleteUser(request: Request, response: Response): void {
+  const id = response.locals.userId as string;
+  if (!userService.delete(id)) {
+    response.status(404).json({
+      type: 'not-found',
+      title: 'Resource Not Found',
+      status: 404,
+      code: 'USR-404-01',
+      detail: 'User was not found.',
+      instance: `${request.baseUrl}${request.path}`,
+    });
+    return;
+  }
+  response.status(204).send();
+}

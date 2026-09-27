@@ -25,6 +25,10 @@ export class UserRepository {
     this.users.set(user.id, user);
     return user;
   }
+
+  delete(id: string): boolean {
+    return this.users.delete(id);
+  }
 }
 
 export const userRepository = new UserRepository();
