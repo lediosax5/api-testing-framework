@@ -45,3 +45,36 @@ export function getUserById(request: Request, response: Response): void {
   }
   response.status(200).json(user);
 }
+
+export function replaceUser(request: Request, response: Response): void {
+  const id = response.locals.userId as string;
+  const input = response.locals.createUserInput as CreateUserInput;
+  try {
+    const user = userService.replace(id, input);
+    if (!user) {
+      response.status(404).json({
+        type: 'not-found',
+        title: 'Resource Not Found',
+        status: 404,
+        code: 'USR-404-01',
+        detail: 'User was not found.',
+        instance: `${request.baseUrl}${request.path}`,
+      });
+      return;
+    }
+    response.status(200).json(user);
+  } catch (error) {
+    if (error instanceof DuplicateUserEmailError) {
+      response.status(409).json({
+        type: 'conflict',
+        title: 'Resource Conflict',
+        status: 409,
+        code: 'USR-409-01',
+        detail: 'A user with this email already exists.',
+        instance: `${request.baseUrl}${request.path}`,
+      });
+      return;
+    }
+    throw error;
+  }
+}

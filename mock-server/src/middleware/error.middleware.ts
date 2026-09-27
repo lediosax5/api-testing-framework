@@ -10,7 +10,7 @@ export function errorHandler(
   response: Response,
   next: NextFunction,
 ): void {
-  if (error.type === 'entity.parse.failed' && request.path === '/api/v1/users') {
+  if (error.type === 'entity.parse.failed' && /^\/api\/v1\/users(?:\/|$)/.test(request.path)) {
     response.status(400).json({
       type: 'invalid-json',
       title: 'Invalid JSON',

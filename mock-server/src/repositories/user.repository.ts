@@ -20,6 +20,11 @@ export class UserRepository {
     this.users.set(user.id, user);
     return user;
   }
+
+  update(user: User): User {
+    this.users.set(user.id, user);
+    return user;
+  }
 }
 
 export const userRepository = new UserRepository();

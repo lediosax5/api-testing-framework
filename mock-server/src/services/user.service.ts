@@ -30,6 +30,25 @@ export class UserService {
     });
   }
 
+  replace(id: string, input: CreateUserInput): User | undefined {
+    const existing = this.repository.findById(id);
+    if (!existing) return undefined;
+
+    const email = input.email.toLowerCase();
+    const duplicate = this.repository.findAll().some(
+      (user) => user.id !== id && user.email.toLowerCase() === email,
+    );
+    if (duplicate) throw new DuplicateUserEmailError();
+
+    return this.repository.update({
+      ...input,
+      email,
+      id: existing.id,
+      createdAt: existing.createdAt,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
   getById(id: string): User | undefined {
     return this.repository.findById(id);
   }

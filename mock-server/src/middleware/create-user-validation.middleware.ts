@@ -11,10 +11,11 @@ export interface ApiErrorBody {
   errors?: Array<{ field: string; message: string }>;
 }
 
-export function validateCreateUserRequest(
+function validateUserBodyRequest(
   request: Request,
   response: Response,
   next: NextFunction,
+  instance: string,
 ): void {
   const result = validateCreateUser(request.body as unknown);
   if (result.errors.length > 0) {
@@ -24,7 +25,7 @@ export function validateCreateUserRequest(
       status: 400,
       code: 'USR-400-01',
       detail: 'Request validation failed.',
-      instance: '/api/v1/users',
+      instance,
       errors: result.errors,
     };
     response.status(400).json(body);
@@ -33,4 +34,20 @@ export function validateCreateUserRequest(
 
   response.locals.createUserInput = result.data;
   next();
+}
+
+export function validateCreateUserRequest(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  validateUserBodyRequest(request, response, next, '/api/v1/users');
+}
+
+export function validateReplaceUserRequest(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  validateUserBodyRequest(request, response, next, `${request.baseUrl}${request.path}`);
 }
