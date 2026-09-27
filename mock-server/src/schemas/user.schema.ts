@@ -8,7 +8,10 @@ export const createUserSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']),
 }).strict();
 
+export const patchUserSchema = createUserSchema.partial();
+
 export type CreateUserBody = z.infer<typeof createUserSchema>;
+export type PatchUserBody = z.infer<typeof patchUserSchema>;
 
 const fieldOrder = ['firstName', 'lastName', 'email', 'age', 'status'] as const;
 type UserField = (typeof fieldOrder)[number];
@@ -26,18 +29,28 @@ export interface ValidationErrorItem {
   message: string;
 }
 
-export function validateCreateUser(value: unknown): {
-  data?: CreateUserBody;
+function validateUserInput<T>(value: unknown, schema: z.ZodType<T>, requireAllFields: boolean): {
+  data?: T;
   errors: ValidationErrorItem[];
 } {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return { errors: [{ field: 'body', message: 'Must be a JSON object.' }] };
   }
 
-  const result = createUserSchema.safeParse(value);
-  if (result.success) return { data: result.data, errors: [] };
+  const result = schema.safeParse(value);
 
   const input = value as Record<string, unknown>;
+  const unknownKeys = result.success ? [] : result.error.issues
+    .filter((issue) => issue.code === 'unrecognized_keys')
+    .flatMap((issue) => issue.code === 'unrecognized_keys' ? issue.keys : [])
+    .sort();
+  if (result.success) {
+    if (requireAllFields || fieldOrder.some((field) => field in input) || unknownKeys.length > 0) {
+      return { data: result.data, errors: [] };
+    }
+    return { errors: [{ field: 'body', message: 'At least one field must be provided.' }] };
+  }
+
   const errors: ValidationErrorItem[] = [];
 
   for (const field of fieldOrder) {
@@ -45,7 +58,7 @@ export function validateCreateUser(value: unknown): {
     if (fieldIssues.length === 0 && field in input) continue;
 
     if (!(field in input)) {
-      errors.push({ field, message: 'Field is required.' });
+      if (requireAllFields) errors.push({ field, message: 'Field is required.' });
       continue;
     }
 
@@ -70,12 +83,27 @@ export function validateCreateUser(value: unknown): {
     errors.push({ field, message });
   }
 
-  const unknownKeys = result.error.issues
-    .filter((issue) => issue.code === 'unrecognized_keys')
-    .flatMap((issue) => issue.code === 'unrecognized_keys' ? issue.keys : []);
-  for (const key of unknownKeys.sort()) {
+  for (const key of unknownKeys) {
     errors.push({ field: key, message: 'Field is not allowed.' });
   }
 
+  if (!requireAllFields && !fieldOrder.some((field) => field in input) && unknownKeys.length === 0) {
+    errors.push({ field: 'body', message: 'At least one field must be provided.' });
+  }
+
   return { errors };
+}
+
+export function validateCreateUser(value: unknown): {
+  data?: CreateUserBody;
+  errors: ValidationErrorItem[];
+} {
+  return validateUserInput(value, createUserSchema, true);
+}
+
+export function validatePatchUser(value: unknown): {
+  data?: PatchUserBody;
+  errors: ValidationErrorItem[];
+} {
+  return validateUserInput(value, patchUserSchema, false);
 }

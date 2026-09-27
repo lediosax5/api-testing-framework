@@ -8,6 +8,8 @@ export interface CreateUserInput {
   status: UserStatus;
 }
 
+export type PatchUserInput = Partial<CreateUserInput>;
+
 export interface User extends CreateUserInput {
   id: string;
   createdAt: string;
