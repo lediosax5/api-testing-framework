@@ -1,0 +1,779 @@
+openapi: 3.1.0
+info:
+  title: ms-hostel-api
+  version: 1.0.0
+  description: >
+    Mock REST API used by the API testing framework for deterministic
+    automation and contract testing.
+servers:
+  - url: /
+tags:
+  - name: Health
+    description: Service health information.
+  - name: Users
+    description: User resource operations.
+  - name: Test Infrastructure
+    description: >
+      Mock-only infrastructure for deterministic automation. These operations
+      are not part of the functional business API.
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      operationId: healthCheck
+      summary: Check service health
+      description: Returns the current health status of the mock service.
+      responses:
+        '200':
+          description: Service health retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: UP
+                service: ms-hostel-api
+                timestamp: '2026-09-27T12:00:00.000Z'
+
+  /api/v1/users:
+    post:
+      tags: [Users]
+      operationId: createUser
+      summary: Create a user
+      description: >
+        Creates a user. The server generates the user's UUID and timestamps,
+        and normalizes email to lowercase. Email addresses must be unique
+        without regard to case.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              firstName: Ada
+              lastName: Lovelace
+              email: ada.lovelace@example.test
+              age: 36
+              status: ACTIVE
+      responses:
+        '201':
+          description: User created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created user.
+              schema:
+                type: string
+              example: /api/v1/users/a1000000-0000-4000-8000-000000000099
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                user:
+                  $ref: '#/components/examples/User'
+        '400':
+          description: >
+            Request validation failed (USR-400-01) or the request body contains
+            malformed JSON (REQ-400-01).
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ValidationError'
+                  - $ref: '#/components/schemas/InvalidJsonError'
+              examples:
+                bodyValidation:
+                  summary: User body validation failed
+                  value:
+                    type: validation-error
+                    title: Validation Error
+                    status: 400
+                    code: USR-400-01
+                    detail: Request validation failed.
+                    instance: /api/v1/users
+                    errors:
+                      - field: email
+                        message: Must be a valid email address.
+                malformedJson:
+                  summary: Malformed JSON body
+                  value:
+                    type: invalid-json
+                    title: Invalid JSON
+                    status: 400
+                    code: REQ-400-01
+                    detail: Request body contains invalid JSON.
+                    instance: /api/v1/users
+        '409':
+          description: Email conflicts with another user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+              example:
+                type: conflict
+                title: Resource Conflict
+                status: 409
+                code: USR-409-01
+                detail: A user with this email already exists.
+                instance: /api/v1/users
+
+    get:
+      tags: [Users]
+      operationId: listUsers
+      summary: List users
+      description: >
+        Filters by status, then searches, sorts, and paginates the matching
+        users. Search is case-insensitive across firstName, lastName, and
+        email; the implementation also normalizes diacritics. Unknown query
+        parameters, repeated known parameters, invalid values, and out-of-range
+        limits are rejected with USR-400-03.
+      parameters:
+        - name: page
+          in: query
+          description: One-based page number.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of users per page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: status
+          in: query
+          description: Filter users by status.
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE]
+        - name: search
+          in: query
+          description: >
+            Case-insensitive substring search over firstName, lastName, and
+            email. The implementation trims surrounding whitespace and
+            normalizes diacritics before searching.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - name: sortBy
+          in: query
+          description: Field used to sort matching users.
+          schema:
+            type: string
+            enum: [firstName, lastName, email, age, status, createdAt, updatedAt]
+            default: createdAt
+        - name: order
+          in: query
+          description: Sort direction.
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Users retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUsersResponse'
+              examples:
+                users:
+                  $ref: '#/components/examples/ListUsersResponse'
+        '400':
+          description: Query parameter validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                type: validation-error
+                title: Validation Error
+                status: 400
+                code: USR-400-03
+                detail: Query parameter validation failed.
+                instance: /api/v1/users?page=0
+                errors:
+                  - field: page
+                    message: Must be greater than or equal to 1.
+
+  /api/v1/users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    get:
+      tags: [Users]
+      operationId: getUserById
+      summary: Get a user
+      description: Retrieves one user by UUID.
+      responses:
+        '200':
+          description: User retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                user:
+                  $ref: '#/components/examples/User'
+        '400':
+          description: The path parameter is not a valid UUID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                type: validation-error
+                title: Validation Error
+                status: 400
+                code: USR-400-02
+                detail: Path parameter validation failed.
+                instance: /api/v1/users/not-a-uuid
+                errors:
+                  - field: id
+                    message: Must be a valid UUID.
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    put:
+      tags: [Users]
+      operationId: replaceUser
+      summary: Replace editable user fields
+      description: >
+        Replaces all editable fields. The user's id and createdAt are
+        preserved; updatedAt is refreshed. Email is normalized to lowercase
+        and must be unique case-insensitively.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+            example:
+              firstName: Ada
+              lastName: Lovelace
+              email: ada.lovelace@example.test
+              age: 36
+              status: ACTIVE
+      responses:
+        '200':
+          description: User replaced successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                user:
+                  $ref: '#/components/examples/User'
+        '400':
+          description: >
+            Path or body validation failed (USR-400-02 or USR-400-01), or the
+            request body contains malformed JSON (REQ-400-01).
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ValidationError'
+                  - $ref: '#/components/schemas/InvalidJsonError'
+              examples:
+                pathValidation:
+                  summary: Invalid user UUID
+                  value:
+                    type: validation-error
+                    title: Validation Error
+                    status: 400
+                    code: USR-400-02
+                    detail: Path parameter validation failed.
+                    instance: /api/v1/users/not-a-uuid
+                    errors:
+                      - field: id
+                        message: Must be a valid UUID.
+                bodyValidation:
+                  summary: User body validation failed
+                  value:
+                    type: validation-error
+                    title: Validation Error
+                    status: 400
+                    code: USR-400-01
+                    detail: Request validation failed.
+                    instance: /api/v1/users/a1000000-0000-4000-8000-000000000001
+                    errors:
+                      - field: email
+                        message: Must be a valid email address.
+                malformedJson:
+                  summary: Malformed JSON body
+                  value:
+                    type: invalid-json
+                    title: Invalid JSON
+                    status: 400
+                    code: REQ-400-01
+                    detail: Request body contains invalid JSON.
+                    instance: /api/v1/users/a1000000-0000-4000-8000-000000000001
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          description: Email conflicts with another user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+              example:
+                type: conflict
+                title: Resource Conflict
+                status: 409
+                code: USR-409-01
+                detail: A user with this email already exists.
+                instance: /api/v1/users/a1000000-0000-4000-8000-000000000001
+
+    patch:
+      tags: [Users]
+      operationId: patchUser
+      summary: Update selected user fields
+      description: >
+        Updates only the supplied editable fields; omitted fields are
+        preserved. An empty object is invalid. The user's id and createdAt are
+        preserved, while updatedAt is refreshed. If email is supplied, it is
+        normalized to lowercase and checked for case-insensitive uniqueness.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUserRequest'
+            examples:
+              patchStatus:
+                summary: Change only the status
+                value:
+                  status: INACTIVE
+      responses:
+        '200':
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                user:
+                  $ref: '#/components/examples/User'
+        '400':
+          description: >
+            Path or partial-body validation failed (USR-400-02 or USR-400-01),
+            including an empty object, or the request body contains malformed
+            JSON (REQ-400-01).
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ValidationError'
+                  - $ref: '#/components/schemas/InvalidJsonError'
+              examples:
+                pathValidation:
+                  summary: Invalid user UUID
+                  value:
+                    type: validation-error
+                    title: Validation Error
+                    status: 400
+                    code: USR-400-02
+                    detail: Path parameter validation failed.
+                    instance: /api/v1/users/not-a-uuid
+                    errors:
+                      - field: id
+                        message: Must be a valid UUID.
+                emptyPatch:
+                  summary: Empty patch body
+                  value:
+                    type: validation-error
+                    title: Validation Error
+                    status: 400
+                    code: USR-400-01
+                    detail: Request validation failed.
+                    instance: /api/v1/users/a1000000-0000-4000-8000-000000000001
+                    errors:
+                      - field: body
+                        message: At least one field must be provided.
+                malformedJson:
+                  summary: Malformed JSON body
+                  value:
+                    type: invalid-json
+                    title: Invalid JSON
+                    status: 400
+                    code: REQ-400-01
+                    detail: Request body contains invalid JSON.
+                    instance: /api/v1/users/a1000000-0000-4000-8000-000000000001
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '409':
+          description: Email conflicts with another user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+              example:
+                type: conflict
+                title: Resource Conflict
+                status: 409
+                code: USR-409-01
+                detail: A user with this email already exists.
+                instance: /api/v1/users/a1000000-0000-4000-8000-000000000001
+
+    delete:
+      tags: [Users]
+      operationId: deleteUser
+      summary: Delete a user
+      description: >
+        Permanently deletes the user from the current in-memory state. A
+        subsequent DELETE for the same user returns 404.
+      responses:
+        '204':
+          description: User deleted successfully.
+        '400':
+          description: The path parameter is not a valid UUID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                type: validation-error
+                title: Validation Error
+                status: 400
+                code: USR-400-02
+                detail: Path parameter validation failed.
+                instance: /api/v1/users/not-a-uuid
+                errors:
+                  - field: id
+                    message: Must be a valid UUID.
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /__test/reset:
+    post:
+      tags: [Test Infrastructure]
+      operationId: resetTestState
+      summary: Reset deterministic test state
+      description: >
+        Restores the mutable in-memory Users state to the canonical seed used
+        by the mock. Dynamically created users are removed, PUT and PATCH
+        changes are reverted, and deleted seed users are restored. This
+        operation is safe to repeat and is not part of the functional business
+        API.
+      responses:
+        '204':
+          description: Test state restored successfully.
+
+components:
+  parameters:
+    UserId:
+      name: id
+      in: path
+      required: true
+      description: User identifier in UUID format.
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    NotFoundResponse:
+      description: User was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+          example:
+            type: not-found
+            title: Resource Not Found
+            status: 404
+            code: USR-404-01
+            detail: User was not found.
+            instance: /api/v1/users/a1000000-0000-4000-8000-000000000099
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, service, timestamp]
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum: [UP]
+        service:
+          type: string
+          enum: [ms-hostel-api]
+        timestamp:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      required: [id, firstName, lastName, email, age, status, createdAt, updatedAt]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        firstName:
+          type: string
+          description: The runtime validator trims surrounding whitespace.
+          minLength: 2
+          maxLength: 50
+        lastName:
+          type: string
+          description: The runtime validator trims surrounding whitespace.
+          minLength: 2
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        age:
+          type: integer
+          minimum: 18
+          maximum: 120
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+      example:
+        id: a1000000-0000-4000-8000-000000000001
+        firstName: Ada
+        lastName: Lovelace
+        email: ada.lovelace@example.test
+        age: 36
+        status: ACTIVE
+        createdAt: '2026-01-01T10:00:00.000Z'
+        updatedAt: '2026-01-01T11:00:00.000Z'
+
+    CreateUserRequest:
+      type: object
+      required: [firstName, lastName, email, age, status]
+      additionalProperties: false
+      properties:
+        firstName:
+          type: string
+          description: The runtime validator trims surrounding whitespace before checking length.
+          minLength: 2
+          maxLength: 50
+        lastName:
+          type: string
+          description: The runtime validator trims surrounding whitespace before checking length.
+          minLength: 2
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        age:
+          type: integer
+          minimum: 18
+          maximum: 120
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+      example:
+        firstName: Ada
+        lastName: Lovelace
+        email: ada.lovelace@example.test
+        age: 36
+        status: ACTIVE
+
+    PatchUserRequest:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        firstName:
+          type: string
+          description: The runtime validator trims surrounding whitespace before checking length.
+          minLength: 2
+          maxLength: 50
+        lastName:
+          type: string
+          description: The runtime validator trims surrounding whitespace before checking length.
+          minLength: 2
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        age:
+          type: integer
+          minimum: 18
+          maximum: 120
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE]
+      example:
+        status: INACTIVE
+
+    Pagination:
+      type: object
+      required: [page, limit, total, totalPages]
+      additionalProperties: false
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+
+    ListUsersResponse:
+      type: object
+      required: [items, pagination]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    ErrorItem:
+      type: object
+      required: [field, message]
+      additionalProperties: false
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
+    ValidationError:
+      type: object
+      required: [type, title, status, code, detail, instance, errors]
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum: [validation-error]
+        title:
+          type: string
+          enum: [Validation Error]
+        status:
+          type: integer
+          enum: [400]
+        code:
+          type: string
+        detail:
+          type: string
+        instance:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+
+    InvalidJsonError:
+      type: object
+      required: [type, title, status, code, detail, instance]
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum: [invalid-json]
+        title:
+          type: string
+          enum: [Invalid JSON]
+        status:
+          type: integer
+          enum: [400]
+        code:
+          type: string
+          enum: [REQ-400-01]
+        detail:
+          type: string
+          enum: [Request body contains invalid JSON.]
+        instance:
+          type: string
+
+    NotFoundError:
+      type: object
+      required: [type, title, status, code, detail, instance]
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum: [not-found]
+        title:
+          type: string
+          enum: [Resource Not Found]
+        status:
+          type: integer
+          enum: [404]
+        code:
+          type: string
+          enum: [USR-404-01]
+        detail:
+          type: string
+          enum: [User was not found.]
+        instance:
+          type: string
+
+    ConflictError:
+      type: object
+      required: [type, title, status, code, detail, instance]
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum: [conflict]
+        title:
+          type: string
+          enum: [Resource Conflict]
+        status:
+          type: integer
+          enum: [409]
+        code:
+          type: string
+          enum: [USR-409-01]
+        detail:
+          type: string
+          enum: [A user with this email already exists.]
+        instance:
+          type: string
+
+  examples:
+    User:
+      value:
+        id: a1000000-0000-4000-8000-000000000001
+        firstName: Ada
+        lastName: Lovelace
+        email: ada.lovelace@example.test
+        age: 36
+        status: ACTIVE
+        createdAt: '2026-01-01T10:00:00.000Z'
+        updatedAt: '2026-01-01T11:00:00.000Z'
+    ListUsersResponse:
+      value:
+        items:
+          - id: a1000000-0000-4000-8000-000000000001
+            firstName: Ada
+            lastName: Lovelace
+            email: ada.lovelace@example.test
+            age: 36
+            status: ACTIVE
+            createdAt: '2026-01-01T10:00:00.000Z'
+            updatedAt: '2026-01-01T11:00:00.000Z'
+        pagination:
+          page: 1
+          limit: 10
+          total: 1
+          totalPages: 1
