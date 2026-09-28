@@ -2,7 +2,19 @@ import type { User } from '../types/user.types';
 import { usersSeed } from '../data/users.seed';
 
 export class UserRepository {
-  private readonly users = new Map<string, User>(usersSeed.map((user) => [user.id, user]));
+  private readonly users = new Map<string, User>();
+
+  constructor() {
+    this.reset();
+  }
+
+  reset(): void {
+    this.users.clear();
+
+    for (const user of usersSeed) {
+      this.users.set(user.id, { ...user });
+    }
+  }
 
   findAll(): User[] {
     return [...this.users.values()];

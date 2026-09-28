@@ -12,6 +12,10 @@ export class DuplicateUserEmailError extends Error {
 export class UserService {
   constructor(private readonly repository = userRepository) { }
 
+  reset(): void {
+    this.repository.reset();
+  }
+
   private normalizeSearchValue(value: string): string {
     return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }

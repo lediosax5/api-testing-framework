@@ -1,6 +1,7 @@
 import express from 'express';
 
 import healthRouter from './routes/health.routes';
+import testRouter from './routes/test.routes';
 import userRouter from './routes/user.routes';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -11,6 +12,7 @@ app.disable('x-powered-by');
 app.use(express.json({ strict: false }));
 
 app.use('/health', healthRouter);
+app.use('/__test', testRouter);
 app.use('/api/v1/users', userRouter);
 app.use(errorHandler);
 
