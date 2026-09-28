@@ -13,9 +13,7 @@ tags:
   - name: Users
     description: User resource operations.
   - name: Test Infrastructure
-    description: >
-      Mock-only infrastructure for deterministic automation. These operations
-      are not part of the functional business API.
+    description: Utilities for deterministic test execution.
 
 paths:
   /health:
@@ -453,13 +451,11 @@ paths:
     post:
       tags: [Test Infrastructure]
       operationId: resetTestState
-      summary: Reset deterministic test state
+      summary: Reset test state
       description: >
-        Restores the mutable in-memory Users state to the canonical seed used
-        by the mock. Dynamically created users are removed, PUT and PATCH
-        changes are reverted, and deleted seed users are restored. This
-        operation is safe to repeat and is not part of the functional business
-        API.
+        Restores the in-memory Users state to the initial seed.
+        Created users are removed, updated users are restored,
+        and deleted seed users are recreated.
       responses:
         '204':
           description: Test state restored successfully.
