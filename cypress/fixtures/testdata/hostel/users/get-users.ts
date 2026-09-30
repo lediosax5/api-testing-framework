@@ -87,7 +87,6 @@ const testData = {
           total: 12,
           totalPages: 2,
         },
-        firstUserAge: 54,
       },
     },
     {
@@ -106,7 +105,6 @@ const testData = {
           total: 12,
           totalPages: 2,
         },
-        firstUserAge: 84,
       },
     },
   ],
