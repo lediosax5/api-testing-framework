@@ -1,17 +1,24 @@
 import userSchema from '../../../../schemas/hostel/users/user.schema';
-import {
-  validationErrorSchema,
-  notFoundErrorSchema,
-} from '../../../../schemas/hostel/common/errors.schema';
+import { validationErrorSchema, notFoundErrorSchema } from '../../../../schemas/hostel/common/errors.schema';
 
 const testData = [
   {
-    description: 'Returns an active user by id',
+    description: 'Returns an active user by id #1',
     userId: 'a1000000-0000-4000-8000-000000000001',
     statusCode: 200,
     schema: userSchema,
     expectedBody: {
       id: 'a1000000-0000-4000-8000-000000000001',
+      status: 'ACTIVE',
+    },
+  },
+  {
+    description: 'Returns an active user by id #2',
+    userId: 'a1000000-0000-4000-8000-000000000003',
+    statusCode: 200,
+    schema: userSchema,
+    expectedBody: {
+      id: 'a1000000-0000-4000-8000-000000000003',
       status: 'ACTIVE',
     },
   },
