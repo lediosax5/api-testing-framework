@@ -13,3 +13,12 @@ Cypress.Commands.add('get_user_by_id', (userId: string) => {
     failOnStatusCode: false,
   });
 });
+
+Cypress.Commands.add('get_users', (query = {}) => {
+  return cy.api({
+    method: 'GET',
+    url: '/api/v1/users',
+    qs: query,
+    failOnStatusCode: false,
+  });
+});
