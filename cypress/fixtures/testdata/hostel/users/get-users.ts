@@ -90,6 +90,25 @@ const testData = {
         firstUserAge: 54,
       },
     },
+    {
+      description: 'Sorts users by age descending',
+      query: {
+        sortBy: 'age',
+        order: 'desc',
+      },
+      statusCode: 200,
+      schema: getUsersSchema,
+      expected: {
+        itemCount: 10,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 12,
+          totalPages: 2,
+        },
+        firstUserAge: 84,
+      },
+    },
   ],
 
   negative: [
@@ -139,6 +158,96 @@ const testData = {
       expected: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
+      },
+    },
+    {
+      description: 'Rejects a non-integer page',
+      query: {
+        page: 'abc',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expected: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'page',
+            message: 'Must be an integer.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects a non-integer limit',
+      query: {
+        limit: 'abc',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expected: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'limit',
+            message: 'Must be an integer.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an invalid sortBy value',
+      query: {
+        sortBy: 'invalid',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expected: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'sortBy',
+            message: 'Must be one of: firstName, lastName, email, age, status, createdAt, updatedAt.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an invalid order value',
+      query: {
+        order: 'invalid',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expected: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'order',
+            message: 'Must be one of: asc, desc.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an empty search value',
+      query: {
+        search: '',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expected: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'search',
+            message: 'Must contain between 1 and 100 characters.',
+          },
+        ],
       },
     },
   ],
