@@ -59,9 +59,9 @@ describe('POST /api/v1/users', () => {
   describe('Negative cases', () => {
     Cypress._.each(testData.negative, ({ description, body, statusCode, schema, expectedBody }) => {
       it(description, () => {
-        cy.step('Send invalid user request');
+        cy.step('Send user request');
         cy.post_user(body).then((response) => {
-          cy.step('Validate validation error');
+          cy.step('Validate error response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);
           expect(response.body).to.deep.include(expectedBody);

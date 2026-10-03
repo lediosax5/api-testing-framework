@@ -1,5 +1,5 @@
 import userSchema from '../../../../schemas/hostel/users/user.schema';
-import { validationErrorSchema, conflictErrorSchema, } from '../../../../schemas/hostel/common/errors.schema';
+import { validationErrorSchema, conflictErrorSchema } from '../../../../schemas/hostel/common/errors.schema';
 
 const uniqueEmail = `qa.post.${Date.now()}@example.test`;
 
