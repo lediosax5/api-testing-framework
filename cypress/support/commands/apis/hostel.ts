@@ -1,4 +1,4 @@
-Cypress.Commands.add('get_health', () => {
+Cypress.Commands.add('getHealth', () => {
   return cy.api({
     method: 'GET',
     url: '/health',
@@ -6,7 +6,7 @@ Cypress.Commands.add('get_health', () => {
   });
 });
 
-Cypress.Commands.add('get_user_by_id', (userId: string) => {
+Cypress.Commands.add('getUserById', (userId: string) => {
   return cy.api({
     method: 'GET',
     url: `/api/v1/users/${userId}`,
@@ -14,7 +14,7 @@ Cypress.Commands.add('get_user_by_id', (userId: string) => {
   });
 });
 
-Cypress.Commands.add('get_users', (query = {}) => {
+Cypress.Commands.add('getUsers', (query = {}) => {
   return cy.api({
     method: 'GET',
     url: '/api/v1/users',
@@ -23,7 +23,7 @@ Cypress.Commands.add('get_users', (query = {}) => {
   });
 });
 
-Cypress.Commands.add('post_user', (body: Cypress.RequestBody) => {
+Cypress.Commands.add('postUser', (body: Cypress.RequestBody) => {
   return cy.api({
     method: 'POST',
     url: '/api/v1/users',
@@ -32,7 +32,7 @@ Cypress.Commands.add('post_user', (body: Cypress.RequestBody) => {
   });
 });
 
-Cypress.Commands.add('delete_user_by_id', (userId: string) => {
+Cypress.Commands.add('deleteUserById', (userId: string) => {
   return cy.api({
     method: 'DELETE',
     url: `/api/v1/users/${userId}`,

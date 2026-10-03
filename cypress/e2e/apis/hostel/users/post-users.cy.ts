@@ -7,7 +7,7 @@ describe('POST /api/v1/users', () => {
 
     afterEach(() => {
       if (createdUserId) {
-        cy.delete_user_by_id(createdUserId);
+        cy.deleteUserById(createdUserId);
         createdUserId = undefined;
       }
     });
@@ -15,7 +15,7 @@ describe('POST /api/v1/users', () => {
     Cypress._.each(testData.positive, ({ description, body, statusCode, schema, expectedBody }) => {
       it(description, () => {
         cy.step('Create user');
-        cy.post_user(body).then((postResponse) => {
+        cy.postUser(body).then((postResponse) => {
           const userId = postResponse.body.id as string;
           createdUserId = userId;
 
@@ -26,7 +26,7 @@ describe('POST /api/v1/users', () => {
           expect(postResponse.headers.location).to.eq(`/api/v1/users/${userId}`);
 
           cy.step('Verify created user');
-          cy.get_user_by_id(userId).then((getResponse) => {
+          cy.getUserById(userId).then((getResponse) => {
             expect(getResponse.status).to.eq(200);
             cy.validateSchema(schema, getResponse.body);
             expect(getResponse.body).to.deep.include({
@@ -36,13 +36,13 @@ describe('POST /api/v1/users', () => {
           });
 
           cy.step('Delete created user');
-          cy.delete_user_by_id(userId).then((deleteResponse) => {
+          cy.deleteUserById(userId).then((deleteResponse) => {
             expect(deleteResponse.status).to.eq(204);
             createdUserId = undefined;
           });
 
           cy.step('Verify user no longer exists');
-          cy.get_user_by_id(userId).then((getDeletedResponse) => {
+          cy.getUserById(userId).then((getDeletedResponse) => {
             expect(getDeletedResponse.status).to.eq(404);
             cy.validateSchema(notFoundErrorSchema, getDeletedResponse.body);
             expect(getDeletedResponse.body).to.deep.include({
@@ -60,7 +60,7 @@ describe('POST /api/v1/users', () => {
     Cypress._.each(testData.negative, ({ description, body, statusCode, schema, expectedBody }) => {
       it(description, () => {
         cy.step('Send user request');
-        cy.post_user(body).then((response) => {
+        cy.postUser(body).then((response) => {
           cy.step('Validate error response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);

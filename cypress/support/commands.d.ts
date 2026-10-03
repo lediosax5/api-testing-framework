@@ -1,10 +1,10 @@
 declare namespace Cypress {
   interface Chainable {
-    get_health(): Chainable<Response<any>>;
-    get_user_by_id(userId: string): Chainable<Response<any>>;
-    get_users(query?: Record<string, string | number | undefined>): Chainable<Response<any>>;
-    post_user(body: Cypress.RequestBody): Chainable<Response<any>>;
-    delete_user_by_id(userId: string): Chainable<Response<any>>;
+    getHealth(): Chainable<Response<any>>;
+    getUserById(userId: string): Chainable<Response<any>>;
+    getUsers(query?: Record<string, string | number | undefined>): Chainable<Response<any>>;
+    postUser(body: Cypress.RequestBody): Chainable<Response<any>>;
+    deleteUserById(userId: string): Chainable<Response<any>>;
 
     validateSchema(schema: object, body: unknown): Chainable<void>;
   }

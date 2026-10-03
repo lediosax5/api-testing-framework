@@ -5,7 +5,7 @@ describe('GET /api/v1/users', () => {
     Cypress._.each(testData.positive, ({ description, query, statusCode, schema, expected }) => {
       it(description, () => {
         cy.step('Request users collection');
-        cy.get_users(query).then((response) => {
+        cy.getUsers(query).then((response) => {
           cy.step('Validate collection response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);
@@ -33,7 +33,7 @@ describe('GET /api/v1/users', () => {
     Cypress._.each(testData.negative, ({ description, query, statusCode, schema, expected }) => {
       it(description, () => {
         cy.step('Send users request');
-        cy.get_users(query).then((response) => {
+        cy.getUsers(query).then((response) => {
           cy.step('Validate error response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);

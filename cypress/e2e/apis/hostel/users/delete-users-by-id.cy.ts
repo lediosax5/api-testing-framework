@@ -6,17 +6,17 @@ describe('DELETE /api/v1/users/{id}', () => {
     Cypress._.each(testData.positive, ({ description, setupBody, statusCode }) => {
       it(description, () => {
         cy.step('Create user for deletion');
-        cy.post_user(setupBody).then((postResponse) => {
+        cy.postUser(setupBody).then((postResponse) => {
           expect(postResponse.status).to.eq(201);
           const userId = postResponse.body.id as string;
 
           cy.step('Delete user');
-          cy.delete_user_by_id(userId).then((deleteResponse) => {
+          cy.deleteUserById(userId).then((deleteResponse) => {
             expect(deleteResponse.status).to.eq(statusCode);
           });
 
           cy.step('Verify user no longer exists');
-          cy.get_user_by_id(userId).then((getResponse) => {
+          cy.getUserById(userId).then((getResponse) => {
             expect(getResponse.status).to.eq(404);
             cy.validateSchema(notFoundErrorSchema, getResponse.body);
 
@@ -35,7 +35,7 @@ describe('DELETE /api/v1/users/{id}', () => {
     Cypress._.each(testData.negative, ({ description, userId, statusCode, schema, expectedBody }) => {
       it(description, () => {
         cy.step('Send delete request');
-        cy.delete_user_by_id(userId).then((response) => {
+        cy.deleteUserById(userId).then((response) => {
           cy.step('Validate error response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);

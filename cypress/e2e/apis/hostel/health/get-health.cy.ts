@@ -1,12 +1,12 @@
 import testData from '../../../../fixtures/testdata/hostel/health/get-health';
 
 describe('GET /health', () => {
-  Cypress._.each(testData, ({ description, status, schema }) => {
+  Cypress._.each(testData, ({ description, statusCode, schema }) => {
     it(description, () => {
       cy.step('Request service health');
-      cy.get_health().then((response) => {
+      cy.getHealth().then((response) => {
         cy.step('Validate health response');
-        expect(response.status).to.eq(status);
+        expect(response.status).to.eq(statusCode);
         cy.validateSchema(schema, response.body);
       });
     });
