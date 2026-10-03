@@ -88,3 +88,41 @@ export const notFoundErrorSchema = {
   ],
   additionalProperties: false,
 } as const;
+
+export const conflictErrorSchema = {
+  type: 'object',
+  properties: {
+    type: {
+      type: 'string',
+      const: 'conflict',
+    },
+    title: {
+      type: 'string',
+      const: 'Resource Conflict',
+    },
+    status: {
+      type: 'integer',
+      const: 409,
+    },
+    code: {
+      type: 'string',
+      const: 'USR-409-01',
+    },
+    detail: {
+      type: 'string',
+      const: 'A user with this email already exists.',
+    },
+    instance: {
+      type: 'string',
+    },
+  },
+  required: [
+    'type',
+    'title',
+    'status',
+    'code',
+    'detail',
+    'instance',
+  ],
+  additionalProperties: false,
+} as const;
