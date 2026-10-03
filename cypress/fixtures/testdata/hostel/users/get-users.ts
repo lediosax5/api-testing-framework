@@ -117,7 +117,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [
@@ -135,7 +135,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [
@@ -153,7 +153,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
       },
@@ -165,7 +165,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [
@@ -183,7 +183,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [
@@ -201,7 +201,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [
@@ -219,7 +219,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [
@@ -237,7 +237,7 @@ const testData = {
       },
       statusCode: 400,
       schema: validationErrorSchema,
-      expected: {
+      expectedBody: {
         code: 'USR-400-03',
         detail: 'Query parameter validation failed.',
         errors: [

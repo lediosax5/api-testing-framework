@@ -30,14 +30,14 @@ describe('GET /api/v1/users', () => {
   });
 
   describe('Negative cases', () => {
-    Cypress._.each(testData.negative, ({ description, query, statusCode, schema, expected }) => {
+    Cypress._.each(testData.negative, ({ description, query, statusCode, schema, expectedBody }) => {
       it(description, () => {
         cy.step('Send users request');
         cy.getUsers(query).then((response) => {
           cy.step('Validate error response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);
-          expect(response.body).to.deep.include(expected);
+          expect(response.body).to.deep.include(expectedBody);
         });
       });
     });
