@@ -41,6 +41,15 @@ Cypress.Commands.add('putUserById', (userId: string, body: Cypress.RequestBody) 
   });
 });
 
+Cypress.Commands.add('patchUserById', (userId: string, body: Cypress.RequestBody) => {
+  return cy.api({
+    method: 'PATCH',
+    url: `/api/v1/users/${userId}`,
+    body,
+    failOnStatusCode: false,
+  });
+});
+
 Cypress.Commands.add('deleteUserById', (userId: string) => {
   return cy.api({
     method: 'DELETE',
