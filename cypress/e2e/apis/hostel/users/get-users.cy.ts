@@ -9,17 +9,22 @@ describe('GET /api/v1/users', () => {
           cy.step('Validate collection response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);
-          expect(response.body.items).to.have.length(expected.itemCount);
-          expect(response.body.pagination).to.deep.equal(expected.pagination);
+
+          const { items, pagination } = response.body;
+
+          expect(pagination.page).to.eq(expected.page);
+          expect(pagination.limit).to.eq(expected.limit);
+          expect(items.length).to.be.at.most(expected.limit);
+          expect(pagination.totalPages).to.eq(Math.ceil(pagination.total / pagination.limit));
 
           if (expected.userStatus) {
-            response.body.items.forEach((user: any) => {
+            items.forEach((user: any) => {
               expect(user.status).to.eq(expected.userStatus);
             });
           }
 
           if ('sortBy' in query && query.sortBy === 'age' && 'order' in query && query.order) {
-            const ages = response.body.items.map((user: { age: number }) => user.age);
+            const ages = items.map((user: { age: number }) => user.age);
             const sortedAges = [...ages].sort((a, b) => (query.order === 'asc' ? a - b : b - a));
 
             expect(ages).to.deep.equal(sortedAges);

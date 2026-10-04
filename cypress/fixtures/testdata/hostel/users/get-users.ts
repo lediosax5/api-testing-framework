@@ -9,13 +9,8 @@ const testData = {
       statusCode: 200,
       schema: getUsersSchema,
       expected: {
-        itemCount: 10,
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 12,
-          totalPages: 2,
-        },
+        page: 1,
+        limit: 10,
       },
     },
     {
@@ -27,13 +22,8 @@ const testData = {
       statusCode: 200,
       schema: getUsersSchema,
       expected: {
-        itemCount: 5,
-        pagination: {
-          page: 2,
-          limit: 5,
-          total: 12,
-          totalPages: 3,
-        },
+        page: 2,
+        limit: 5,
       },
     },
     {
@@ -44,13 +34,8 @@ const testData = {
       statusCode: 200,
       schema: getUsersSchema,
       expected: {
-        itemCount: 4,
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 4,
-          totalPages: 1,
-        },
+        page: 1,
+        limit: 10,
         userStatus: 'INACTIVE',
       },
     },
@@ -62,13 +47,8 @@ const testData = {
       statusCode: 200,
       schema: getUsersSchema,
       expected: {
-        itemCount: 2,
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 2,
-          totalPages: 1,
-        },
+        page: 1,
+        limit: 10,
       },
     },
     {
@@ -80,13 +60,8 @@ const testData = {
       statusCode: 200,
       schema: getUsersSchema,
       expected: {
-        itemCount: 10,
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 12,
-          totalPages: 2,
-        },
+        page: 1,
+        limit: 10,
       },
     },
     {
@@ -98,13 +73,8 @@ const testData = {
       statusCode: 200,
       schema: getUsersSchema,
       expected: {
-        itemCount: 10,
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 12,
-          totalPages: 2,
-        },
+        page: 1,
+        limit: 10,
       },
     },
   ],

@@ -3,26 +3,15 @@ import { notFoundErrorSchema } from '../../../../schemas/hostel/common/errors.sc
 
 describe('POST /api/v1/users', () => {
   describe('Positive cases', () => {
-    let createdUserId: string | undefined;
-
-    afterEach(() => {
-      if (createdUserId) {
-        cy.deleteUserById(createdUserId);
-        createdUserId = undefined;
-      }
-    });
-
     Cypress._.each(testData.positive, ({ description, body, statusCode, schema, expectedBody }) => {
       it(description, () => {
         cy.step('Create user');
         cy.postUser(body).then((postResponse) => {
           const userId = postResponse.body.id as string;
-          createdUserId = userId;
 
           expect(postResponse.status).to.eq(statusCode);
           cy.validateSchema(schema, postResponse.body);
           expect(postResponse.body).to.deep.include(expectedBody);
-
           expect(postResponse.headers.location).to.eq(`/api/v1/users/${userId}`);
 
           cy.step('Verify created user');
@@ -38,7 +27,6 @@ describe('POST /api/v1/users', () => {
           cy.step('Delete created user');
           cy.deleteUserById(userId).then((deleteResponse) => {
             expect(deleteResponse.status).to.eq(204);
-            createdUserId = undefined;
           });
 
           cy.step('Verify user no longer exists');
