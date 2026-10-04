@@ -32,6 +32,15 @@ Cypress.Commands.add('postUser', (body: Cypress.RequestBody) => {
   });
 });
 
+Cypress.Commands.add('putUserById', (userId: string, body: Cypress.RequestBody) => {
+  return cy.api({
+    method: 'PUT',
+    url: `/api/v1/users/${userId}`,
+    body,
+    failOnStatusCode: false,
+  });
+});
+
 Cypress.Commands.add('deleteUserById', (userId: string) => {
   return cy.api({
     method: 'DELETE',

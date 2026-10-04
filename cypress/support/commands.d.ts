@@ -4,6 +4,7 @@ declare namespace Cypress {
     getUserById(userId: string): Chainable<Response<any>>;
     getUsers(query?: Record<string, string | number | undefined>): Chainable<Response<any>>;
     postUser(body: Cypress.RequestBody): Chainable<Response<any>>;
+    putUserById(userId: string, body: Cypress.RequestBody): Chainable<Response<any>>;
     deleteUserById(userId: string): Chainable<Response<any>>;
 
     validateSchema(schema: object, body: unknown): Chainable<void>;
