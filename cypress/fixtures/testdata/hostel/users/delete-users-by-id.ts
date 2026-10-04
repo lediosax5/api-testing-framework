@@ -1,6 +1,6 @@
 import { validationErrorSchema, notFoundErrorSchema } from '../../../../schemas/hostel/common/errors.schema';
 
-const uniqueEmail = `qa.delete.${Date.now()}@example.test`;
+const runId = Date.now();
 
 const testData = {
   positive: [
@@ -9,11 +9,27 @@ const testData = {
       setupBody: {
         firstName: 'Delete',
         lastName: 'Test',
-        email: uniqueEmail,
+        email: `qa.delete.single.${runId}@example.test`,
         age: 30,
         status: 'ACTIVE',
       },
       statusCode: 204,
+    },
+    {
+      description: 'Returns not found when deleting the same user twice',
+      setupBody: {
+        firstName: 'Delete',
+        lastName: 'Twice',
+        email: `qa.delete.twice.${runId}@example.test`,
+        age: 30,
+        status: 'ACTIVE',
+      },
+      statusCode: 204,
+      secondDeleteStatusCode: 404,
+      expectedBody: {
+        code: 'USR-404-01',
+        detail: 'User was not found.',
+      },
     },
   ],
 

@@ -1,8 +1,7 @@
 import userSchema from '../../../../schemas/hostel/users/user.schema';
 import { validationErrorSchema, notFoundErrorSchema, conflictErrorSchema } from '../../../../schemas/hostel/common/errors.schema';
 
-const originalEmail = `qa.put.original.${Date.now()}@example.test`;
-const updatedEmail = `qa.put.updated.${Date.now()}@example.test`;
+const runId = Date.now();
 
 const testData = {
   positive: [
@@ -11,14 +10,33 @@ const testData = {
       setupBody: {
         firstName: 'Original',
         lastName: 'User',
-        email: originalEmail,
+        email: `qa.put.original.${runId}@example.test`,
         age: 30,
         status: 'ACTIVE',
       },
       body: {
         firstName: 'Updated',
         lastName: 'UserEdit',
-        email: updatedEmail,
+        email: `qa.put.updated.${runId}@example.test`,
+        age: 35,
+        status: 'INACTIVE',
+      },
+      statusCode: 200,
+      schema: userSchema,
+    },
+    {
+      description: 'Replaces a user while keeping the same email',
+      setupBody: {
+        firstName: 'Original',
+        lastName: 'User',
+        email: `qa.put.same-email.${runId}@example.test`,
+        age: 30,
+        status: 'ACTIVE',
+      },
+      body: {
+        firstName: 'Updated',
+        lastName: 'UserEdit',
+        email: `qa.put.same-email.${runId}@example.test`,
         age: 35,
         status: 'INACTIVE',
       },
@@ -78,6 +96,53 @@ const testData = {
           {
             field: 'status',
             message: 'Field is required.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an invalid email format',
+      userId: 'a1000000-0000-4000-8000-000000000001',
+      body: {
+        firstName: 'Updated',
+        lastName: 'User',
+        email: 'invalid-email',
+        age: 35,
+        status: 'ACTIVE',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-01',
+        detail: 'Request validation failed.',
+        errors: [
+          {
+            field: 'email',
+            message: 'Must be a valid email address.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an unknown field',
+      userId: 'a1000000-0000-4000-8000-000000000001',
+      body: {
+        firstName: 'Updated',
+        lastName: 'User',
+        email: 'qa.put.unknown-field@example.test',
+        age: 35,
+        status: 'ACTIVE',
+        nickname: 'Test',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-01',
+        detail: 'Request validation failed.',
+        errors: [
+          {
+            field: 'nickname',
+            message: 'Field is not allowed.',
           },
         ],
       },

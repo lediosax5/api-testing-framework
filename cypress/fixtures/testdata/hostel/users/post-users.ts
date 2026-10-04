@@ -1,7 +1,7 @@
 import userSchema from '../../../../schemas/hostel/users/user.schema';
 import { validationErrorSchema, conflictErrorSchema } from '../../../../schemas/hostel/common/errors.schema';
 
-const uniqueEmail = `qa.post.${Date.now()}@example.test`;
+const runId = Date.now();
 
 const testData = {
   positive: [
@@ -10,7 +10,7 @@ const testData = {
       body: {
         firstName: 'Guido',
         lastName: 'Piaggio',
-        email: uniqueEmail,
+        email: `qa.post.valid.${runId}@example.test`,
         age: 30,
         status: 'ACTIVE',
       },
@@ -19,8 +19,27 @@ const testData = {
       expectedBody: {
         firstName: 'Guido',
         lastName: 'Piaggio',
-        email: uniqueEmail,
+        email: `qa.post.valid.${runId}@example.test`,
         age: 30,
+        status: 'ACTIVE',
+      },
+    },
+    {
+      description: 'Creates a user with the minimum allowed age',
+      body: {
+        firstName: 'Boundary',
+        lastName: 'User',
+        email: `qa.post.minimum-age.${runId}@example.test`,
+        age: 18,
+        status: 'ACTIVE',
+      },
+      statusCode: 201,
+      schema: userSchema,
+      expectedBody: {
+        firstName: 'Boundary',
+        lastName: 'User',
+        email: `qa.post.minimum-age.${runId}@example.test`,
+        age: 18,
         status: 'ACTIVE',
       },
     },
@@ -77,6 +96,73 @@ const testData = {
           {
             field: 'age',
             message: 'Must be greater than or equal to 18.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects age above maximum',
+      body: {
+        firstName: 'Guido',
+        lastName: 'Piaggio',
+        email: 'qa.invalid.max.age@example.test',
+        age: 121,
+        status: 'ACTIVE',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-01',
+        detail: 'Request validation failed.',
+        errors: [
+          {
+            field: 'age',
+            message: 'Must be less than or equal to 120.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an invalid email',
+      body: {
+        firstName: 'Guido',
+        lastName: 'Piaggio',
+        email: 'invalid-email',
+        age: 30,
+        status: 'ACTIVE',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-01',
+        detail: 'Request validation failed.',
+        errors: [
+          {
+            field: 'email',
+            message: 'Must be a valid email address.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an unknown field',
+      body: {
+        firstName: 'Guido',
+        lastName: 'Piaggio',
+        email: 'qa.invalid.unknown-field@example.test',
+        age: 30,
+        status: 'ACTIVE',
+        nickname: 'Test',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-01',
+        detail: 'Request validation failed.',
+        errors: [
+          {
+            field: 'nickname',
+            message: 'Field is not allowed.',
           },
         ],
       },

@@ -23,6 +23,37 @@ const testData = {
       schema: userSchema,
     },
     {
+      description: 'Updates only the status field',
+      setupBody: {
+        firstName: 'Original',
+        lastName: 'User',
+        email: `qa.patch.single.${runId}@example.test`,
+        age: 30,
+        status: 'ACTIVE',
+      },
+      body: {
+        status: 'INACTIVE',
+      },
+      statusCode: 200,
+      schema: userSchema,
+    },
+    {
+      description: 'Updates a user while sending the same email',
+      setupBody: {
+        firstName: 'Original',
+        lastName: 'User',
+        email: `qa.patch.same-email.${runId}@example.test`,
+        age: 30,
+        status: 'ACTIVE',
+      },
+      body: {
+        email: `qa.patch.same-email.${runId}@example.test`,
+        status: 'INACTIVE',
+      },
+      statusCode: 200,
+      schema: userSchema,
+    },
+    {
       description: 'Updates all user fields',
       setupBody: {
         firstName: 'Original',

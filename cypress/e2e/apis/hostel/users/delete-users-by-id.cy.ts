@@ -3,7 +3,9 @@ import { notFoundErrorSchema } from '../../../../schemas/hostel/common/errors.sc
 
 describe('DELETE /api/v1/users/{id}', () => {
   describe('Positive cases', () => {
-    Cypress._.each(testData.positive, ({ description, setupBody, statusCode }) => {
+    Cypress._.each(testData.positive, (testCase) => {
+      const { description, setupBody, statusCode } = testCase;
+
       it(description, () => {
         cy.step('Create user for deletion');
         cy.postUser(setupBody).then((postResponse) => {
@@ -14,6 +16,19 @@ describe('DELETE /api/v1/users/{id}', () => {
           cy.deleteUserById(userId).then((deleteResponse) => {
             expect(deleteResponse.status).to.eq(statusCode);
           });
+
+          if ('secondDeleteStatusCode' in testCase) {
+            cy.step('Delete the same user again');
+            cy.deleteUserById(userId).then((secondDeleteResponse) => {
+              expect(secondDeleteResponse.status).to.eq(testCase.secondDeleteStatusCode);
+              cy.validateSchema(notFoundErrorSchema, secondDeleteResponse.body);
+
+              expect(secondDeleteResponse.body).to.deep.include({
+                ...testCase.expectedBody,
+                instance: `/api/v1/users/${userId}`,
+              });
+            });
+          }
 
           cy.step('Verify user no longer exists');
           cy.getUserById(userId).then((getResponse) => {

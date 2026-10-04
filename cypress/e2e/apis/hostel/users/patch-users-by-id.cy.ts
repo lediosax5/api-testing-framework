@@ -4,7 +4,7 @@ describe('PATCH /api/v1/users/{id}', () => {
   describe('Positive cases', () => {
     Cypress._.each(testData.positive, ({ description, setupBody, body, statusCode, schema }) => {
       it(description, () => {
-        cy.step('Create user for partial update');
+        cy.step('Create user for update');
         cy.postUser(setupBody).then((postResponse) => {
           expect(postResponse.status).to.eq(201);
 
@@ -12,7 +12,7 @@ describe('PATCH /api/v1/users/{id}', () => {
           const createdAt = postResponse.body.createdAt as string;
           const previousUpdatedAt = postResponse.body.updatedAt as string;
 
-          cy.step('Partially update user');
+          cy.step('Update user');
           cy.patchUserById(userId, body).then((patchResponse) => {
             expect(patchResponse.status).to.eq(statusCode);
             cy.validateSchema(schema, patchResponse.body);

@@ -77,6 +77,34 @@ const testData = {
         limit: 10,
       },
     },
+    {
+      description: 'Filters active users and sorts by age descending',
+      query: {
+        status: 'ACTIVE',
+        sortBy: 'age',
+        order: 'desc',
+        limit: 5,
+      },
+      statusCode: 200,
+      schema: getUsersSchema,
+      expected: {
+        page: 1,
+        limit: 5,
+        userStatus: 'ACTIVE',
+      },
+    },
+    {
+      description: 'Accepts the maximum allowed limit',
+      query: {
+        limit: 100,
+      },
+      statusCode: 200,
+      schema: getUsersSchema,
+      expected: {
+        page: 1,
+        limit: 100,
+      },
+    },
   ],
 
   negative: [
@@ -112,6 +140,42 @@ const testData = {
           {
             field: 'limit',
             message: 'Must be less than or equal to 100.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects limit lower than one',
+      query: {
+        limit: 0,
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'limit',
+            message: 'Must be greater than or equal to 1.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects an unknown query parameter',
+      query: {
+        unknown: 'value',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'unknown',
+            message: 'Query parameter is not allowed.',
           },
         ],
       },
@@ -204,6 +268,24 @@ const testData = {
       description: 'Rejects an empty search value',
       query: {
         search: '',
+      },
+      statusCode: 400,
+      schema: validationErrorSchema,
+      expectedBody: {
+        code: 'USR-400-03',
+        detail: 'Query parameter validation failed.',
+        errors: [
+          {
+            field: 'search',
+            message: 'Must contain between 1 and 100 characters.',
+          },
+        ],
+      },
+    },
+    {
+      description: 'Rejects search longer than one hundred characters',
+      query: {
+        search: 'a'.repeat(101),
       },
       statusCode: 400,
       schema: validationErrorSchema,
