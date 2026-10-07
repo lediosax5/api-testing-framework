@@ -1,4 +1,5 @@
 import testData from '../../../../fixtures/testdata/hostel/users/get-users-by-id';
+import { User } from '../../../../types/hostel/users';
 
 describe('GET /api/v1/users/{id}', () => {
   describe('Positive cases', () => {
@@ -9,7 +10,8 @@ describe('GET /api/v1/users/{id}', () => {
           cy.step('Validate user response');
           expect(response.status).to.eq(statusCode);
           cy.validateSchema(schema, response.body);
-          expect(response.body).to.deep.include(expectedBody);
+          const user = response.body as User;
+          expect(user).to.deep.include(expectedBody);
         });
       });
     });

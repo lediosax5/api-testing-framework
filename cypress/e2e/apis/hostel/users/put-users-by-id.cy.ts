@@ -1,4 +1,5 @@
 import testData from '../../../../fixtures/testdata/hostel/users/put-users-by-id';
+import { User } from '../../../../types/hostel/users';
 
 describe('PUT /api/v1/users/{id}', () => {
   describe('Positive cases', () => {
@@ -16,27 +17,29 @@ describe('PUT /api/v1/users/{id}', () => {
           cy.putUserById(userId, body).then((putResponse) => {
             expect(putResponse.status).to.eq(statusCode);
             cy.validateSchema(schema, putResponse.body);
+            const updatedUser = putResponse.body as User;
 
-            expect(putResponse.body).to.deep.include({
+            expect(updatedUser).to.deep.include({
               id: userId,
               ...body,
             });
 
-            expect(putResponse.body.createdAt).to.eq(createdAt);
-            expect(putResponse.body.updatedAt).to.not.eq(previousUpdatedAt);
+            expect(updatedUser.createdAt).to.eq(createdAt);
+            expect(updatedUser.updatedAt).to.not.eq(previousUpdatedAt);
 
             cy.step('Verify replaced user');
             cy.getUserById(userId).then((getResponse) => {
               expect(getResponse.status).to.eq(200);
               cy.validateSchema(schema, getResponse.body);
+              const persistedUser = getResponse.body as User;
 
-              expect(getResponse.body).to.deep.include({
+              expect(persistedUser).to.deep.include({
                 id: userId,
                 ...body,
               });
 
-              expect(getResponse.body.createdAt).to.eq(createdAt);
-              expect(getResponse.body.updatedAt).to.eq(putResponse.body.updatedAt);
+              expect(persistedUser.createdAt).to.eq(createdAt);
+              expect(persistedUser.updatedAt).to.eq(updatedUser.updatedAt);
             });
 
             cy.step('Delete created user');
