@@ -25,7 +25,7 @@ describe('GET /api/v1/users', () => {
           }
 
           if ('sortBy' in query && query.sortBy === 'age' && 'order' in query && query.order) {
-            const ages = items.map((user: { age: number }) => user.age);
+            const ages = items.map((user) => user.age);
             const sortedAges = [...ages].sort((a, b) => (query.order === 'asc' ? a - b : b - a));
 
             expect(ages).to.deep.equal(sortedAges);
