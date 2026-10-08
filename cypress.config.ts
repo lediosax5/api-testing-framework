@@ -46,6 +46,10 @@ export default defineConfig({
     supportFile: 'cypress/support/e2e.ts',
 
     setupNodeEvents(on, config) {
+      if (!config.isInteractive) {
+        config.excludeSpecPattern = 'cypress/e2e/apis/**/utilities/**/*.cy.ts';
+      }
+
       console.log(`[Cypress] API target: ${config.baseUrl}`);
       require('cypress-mochawesome-reporter/plugin')(on);
 
