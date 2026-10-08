@@ -1,0 +1,64 @@
+name: API Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript validation
+        run: npm run typecheck
+
+      - name: Start mock API
+        run: |
+          mkdir -p logs
+          npm run mock:start > logs/mock-server.log 2>&1 &
+
+      - name: Wait for mock API
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:3000/health > /dev/null; then
+              echo "Mock API is healthy."
+              exit 0
+            fi
+
+            echo "Waiting for mock API (${attempt}/30)..."
+            sleep 2
+          done
+
+          echo "Mock API did not become healthy at http://localhost:3000/health."
+
+          if [ -f logs/mock-server.log ]; then
+            cat logs/mock-server.log
+          fi
+
+          exit 1
+
+      - name: Run Cypress
+        run: npm run cy:run
+
+      - name: Upload API test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-artifacts
+          path: |
+            cypress/reports/
+            logs/
+            cypress/screenshots/
+          if-no-files-found: ignore
