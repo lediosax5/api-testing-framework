@@ -1,5 +1,6 @@
 import testData from '../../../../fixtures/testdata/hostel/users/post-users';
 import { notFoundErrorSchema } from '../../../../schemas/hostel/common/errors.schema';
+import { User } from '../../../../types/hostel/users';
 
 describe('POST /api/v1/users', () => {
   describe('Positive cases', () => {
@@ -11,14 +12,16 @@ describe('POST /api/v1/users', () => {
 
           expect(postResponse.status).to.eq(statusCode);
           cy.validateSchema(schema, postResponse.body);
-          expect(postResponse.body).to.deep.include(expectedBody);
+          const createdUser = postResponse.body as User;
+          expect(createdUser).to.deep.include(expectedBody);
           expect(postResponse.headers.location).to.eq(`/api/v1/users/${userId}`);
 
           cy.step('Verify created user');
           cy.getUserById(userId).then((getResponse) => {
             expect(getResponse.status).to.eq(200);
             cy.validateSchema(schema, getResponse.body);
-            expect(getResponse.body).to.deep.include({
+            const fetchedUser = getResponse.body as User;
+            expect(fetchedUser).to.deep.include({
               id: userId,
               ...expectedBody,
             });
