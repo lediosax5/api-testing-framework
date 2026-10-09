@@ -12,7 +12,18 @@
     "typecheck": "npm run typecheck:cypress && npm run typecheck:mock",
     "test": "npm run cy:run"
   },
-  "keywords": [],
+  "keywords": [
+    "cypress",
+    "typescript",
+    "api-testing",
+    "test-automation",
+    "contract-testing",
+    "ajv",
+    "github-actions"
+  ],
+  "engines": {
+    "node": "24.x"
+  },
   "author": "Guido Piaggio",
   "private": true,
   "license": "ISC",
