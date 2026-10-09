@@ -1,4 +1,5 @@
 # API Testing Framework
+[![API Tests](https://github.com/lediosax5/api-testing-framework/actions/workflows/api-tests.yml/badge.svg)](https://github.com/lediosax5/api-testing-framework/actions/workflows/api-tests.yml)
 
 Framework de **API test automation** construido con Cypress + TypeScript, pensado como base reutilizable para automatizar APIs y microservices.
 
