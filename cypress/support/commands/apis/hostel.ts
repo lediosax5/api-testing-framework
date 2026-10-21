@@ -1,5 +1,7 @@
+import { apiWithEvidence } from '../../http-evidence';
+
 Cypress.Commands.add('getHealth', () => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'GET',
     url: '/health',
     failOnStatusCode: false,
@@ -7,7 +9,7 @@ Cypress.Commands.add('getHealth', () => {
 });
 
 Cypress.Commands.add('getUserById', (userId: string) => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'GET',
     url: `/api/v1/users/${userId}`,
     failOnStatusCode: false,
@@ -15,7 +17,7 @@ Cypress.Commands.add('getUserById', (userId: string) => {
 });
 
 Cypress.Commands.add('getUsers', (query = {}) => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'GET',
     url: '/api/v1/users',
     qs: query,
@@ -24,7 +26,7 @@ Cypress.Commands.add('getUsers', (query = {}) => {
 });
 
 Cypress.Commands.add('postUser', (body: Cypress.RequestBody) => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'POST',
     url: '/api/v1/users',
     body,
@@ -33,7 +35,7 @@ Cypress.Commands.add('postUser', (body: Cypress.RequestBody) => {
 });
 
 Cypress.Commands.add('putUserById', (userId: string, body: Cypress.RequestBody) => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'PUT',
     url: `/api/v1/users/${userId}`,
     body,
@@ -42,7 +44,7 @@ Cypress.Commands.add('putUserById', (userId: string, body: Cypress.RequestBody) 
 });
 
 Cypress.Commands.add('patchUserById', (userId: string, body: Cypress.RequestBody) => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'PATCH',
     url: `/api/v1/users/${userId}`,
     body,
@@ -51,7 +53,7 @@ Cypress.Commands.add('patchUserById', (userId: string, body: Cypress.RequestBody
 });
 
 Cypress.Commands.add('deleteUserById', (userId: string) => {
-  return cy.api({
+  return apiWithEvidence({
     method: 'DELETE',
     url: `/api/v1/users/${userId}`,
     failOnStatusCode: false,
