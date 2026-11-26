@@ -36,11 +36,10 @@ pids/
 *.pid.lock
 *.seed
 
-# TypeScript / Build output
+# Build output
 dist/
 build/
 build/Release/
-*.tsbuildinfo
 
 # Temporary files / caches
 .cache/

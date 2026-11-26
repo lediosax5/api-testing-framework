@@ -1,20 +1,17 @@
 {
   "name": "api-testing-framework",
   "version": "1.1.0",
-  "description": "Professional API test automation framework built with Cypress and TypeScript",
+  "description": "API test automation framework built with Cypress and JavaScript",
   "scripts": {
     "cy:open": "cypress open --e2e",
     "cy:run": "cypress run --e2e --browser chrome",
-    "mock:start": "tsx mock-server/src/server.ts",
-    "mock:dev": "tsx watch mock-server/src/server.ts",
-    "typecheck:cypress": "tsc --noEmit -p cypress/tsconfig.json",
-    "typecheck:mock": "tsc --noEmit -p mock-server/tsconfig.json",
-    "typecheck": "npm run typecheck:cypress && npm run typecheck:mock",
+    "mock:start": "node mock-server/src/server.js",
+    "mock:dev": "node --watch mock-server/src/server.js",
     "test": "npm run cy:run"
   },
   "keywords": [
     "cypress",
-    "typescript",
+    "javascript",
     "api-testing",
     "test-automation",
     "contract-testing",
@@ -29,18 +26,13 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.6.2",
-    "@types/swagger-ui-express": "^4.1.8",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "cypress": "^16.3.0",
     "cypress-mochawesome-reporter": "^5.0.0",
     "cypress-plugin-api": "^2.12.3",
     "cypress-plugin-steps": "^1.2.1",
-    "cypress-terminal-report": "^7.3.3",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "cypress-terminal-report": "^7.3.3"
   },
   "dependencies": {
     "express": "^5.2.1",
@@ -55,7 +47,6 @@
   },
   "allowScripts": {
     "cypress@16.3.0": true,
-    "esbuild@0.28.2": true,
     "@scarf/scarf": false
   }
 }

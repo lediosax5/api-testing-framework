@@ -1,16 +1,16 @@
 # API Testing Framework
 [![API Tests](https://github.com/lediosax5/api-testing-framework/actions/workflows/api-tests.yml/badge.svg)](https://github.com/lediosax5/api-testing-framework/actions/workflows/api-tests.yml)
 
-Framework de **API test automation** construido con Cypress + TypeScript, pensado como base reutilizable para automatizar APIs y microservices.
+Framework de **automatización de pruebas de API** construido con Cypress y JavaScript, pensado como base reutilizable para automatizar APIs y microservicios.
 
-El objetivo no es solamente ejecutar requests: el proyecto cubre validaciones funcionales, contratos de respuesta, escenarios positivos y negativos, manejo de test data, reporting y ejecución automática en CI.
+El proyecto cubre validaciones funcionales, contratos de respuesta, escenarios positivos y negativos, manejo de datos de prueba, reportes y ejecución automática en CI.
 
 ## Stack
 
-**Cypress · TypeScript · AJV · Express · Zod · OpenAPI · GitHub Actions**
+**JavaScript (CommonJS) · Node.js · Cypress · AJV · Express · Zod · OpenAPI · GitHub Actions**
 
+- Node.js para ejecutar la API mock directamente.
 - Cypress para ejecución de API tests.
-- TypeScript para mantener tipado y escalabilidad.
 - AJV + JSON Schema para validar response contracts.
 - Express + Zod para una API mock determinística.
 - OpenAPI / Swagger para documentar el servicio bajo prueba.
@@ -43,18 +43,17 @@ El `ms-hostel-api` funciona como API de referencia local y permite ejecutar la s
 
 ```text
 cypress/
-├── e2e/apis/          # Test specs organizados por API y resource
+├── e2e/apis/          # Specs .cy.js organizadas por API y recurso
 ├── fixtures/          # Test data
 ├── schemas/           # Response contracts
-├── support/           # Custom commands y configuración
-└── types/             # Domain types
+└── support/           # Configuración de soporte, comandos y evidencia HTTP
 
 mock-server/
 ├── src/               # Express API
 └── openapi/           # OpenAPI specification
 
 .github/workflows/     # GitHub Actions
-cypress.config.ts
+cypress.config.js       # URL de la API, specs y reportes
 ```
 
 ## Current coverage
@@ -79,31 +78,33 @@ Con la API mock ejecutándose, la documentación Swagger está disponible en:
 
 ## Run locally
 
-Requiere [**Node.js 24+**](https://nodejs.org/).
+Requiere **Node.js 24.x** y **Google Chrome** para la ejecución por consola.
 
 ```bash
 npm ci
 ```
 
-Levantar la API mock:
+Iniciá la API mock.
 
 ```bash
 npm run mock:start
 ```
 
-En otra terminal:
+En otra terminal, ejecutá la suite.
 
 ```bash
 npm run cy:run
 ```
 
-Para ejecución interactiva:
+`npm test` ejecuta la misma suite. Para usar el modo interactivo, abrí Cypress.
 
 ```bash
 npm run cy:open
 ```
 
-También se puede ejecutar contra otra API compatible configurando `API_BASE_URL`.
+Usá `npm run mock:dev` para reiniciar la API automáticamente cuando cambian sus archivos JavaScript. La API y Cypress usan el puerto `3000` por defecto. Podés configurar `PORT` en ambas terminales para usar otro puerto o apuntar Cypress a una API compatible mediante `API_BASE_URL`.
+
+La spec `reset-test-data.cy.js` está disponible en modo interactivo para restaurar los datos iniciales de la API mock.
 
 ## CI & Evidence
 
@@ -111,7 +112,6 @@ Cada `push` y `pull_request` ejecuta automáticamente:
 
 ```text
 npm ci
-→ TypeScript validation
 → Start mock API
 → Health check
 → Cypress API tests
